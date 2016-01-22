@@ -8,7 +8,7 @@ UniqueID Server
 # pylint: disable=broad-except
 from wsgiref.simple_server import make_server
 import json
-from cgi import parse_qs
+from urlparse import parse_qs
 
 import os
 import peewee
@@ -64,7 +64,7 @@ def application(environ, start_response):
             DB.close()
     else:
         index = -99
-        id_range = 1
+        id_range = long(1)
 
 
     id_dict = {'startIndex' : index, 'endIndex': index+id_range-1}
