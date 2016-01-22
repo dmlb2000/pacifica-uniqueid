@@ -1,3 +1,3 @@
 FROM python:2-onbuild
 EXPOSE 8051
-CMD [ "python", "./MyEmslFileIndexServer.py" ]
+CMD [ "python", "./FileIndexServer.py" ]

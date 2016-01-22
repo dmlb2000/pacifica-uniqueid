@@ -1,3 +1,3 @@
 #!/bin/bash -xe
 
-pylint MyEmslFileIndexServer
+pylint FileIndexServer
