@@ -1,1 +1,1 @@
-docker build -t docker-file-index-server -f dockerFileIndexServer.txt .
+docker build -t docker-file-index-server .
