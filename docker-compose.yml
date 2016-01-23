@@ -13,3 +13,5 @@ uniqueid:
   dockerfile: Dockerfile
   links:
     - uniqueidmysql:mysql
+  ports:
+    - 8080:8051

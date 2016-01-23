@@ -13,6 +13,7 @@ from urlparse import parse_qs
 import os
 import peewee
 
+print "Connecting To Database"
 DB = peewee.MySQLDatabase(os.getenv('MYSQL_ENV_MYSQL_DATABASE'),
                           host=os.getenv('MYSQL_PORT_3306_TCP_ADDR'),
                           port=int(os.getenv('MYSQL_PORT_3306_TCP_PORT')),
@@ -82,8 +83,8 @@ def application(environ, start_response):
     print response_body
     return [response_body]
 
+print "Starting Up"
 try:
-
     print os.getenv('MYSQL_ENV_MYSQL_DATABASE')
     print os.getenv('MYSQL_PORT_3306_TCP_ADDR')
     print os.getenv('MYSQL_PORT_3306_TCP_PORT')
