@@ -5,13 +5,13 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>65fbf8f1-0f97-46ca-a8d1-89b7dac1d432</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>MyEmslFileIndexServer.py</StartupFile>
+    <StartupFile>FileIndexServer.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
-    <Name>MyEmslFileIndexServer</Name>
-    <RootNamespace>MyEmslFileIndexServer</RootNamespace>
+    <Name>FileIndexServer</Name>
+    <RootNamespace>FileIndexServer</RootNamespace>
     <InterpreterId>{9a7a9026-48c1-4688-9d5d-e5699d47d074}</InterpreterId>
     <InterpreterVersion>2.7</InterpreterVersion>
   </PropertyGroup>
@@ -24,7 +24,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="MyEmslFileIndexServer.py" />
+    <Compile Include="FileIndexServer.py" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="{9a7a9026-48c1-4688-9d5d-e5699d47d074}\2.7" />
