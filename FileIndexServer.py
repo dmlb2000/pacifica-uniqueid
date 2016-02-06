@@ -40,7 +40,7 @@ def application(environ, start_response):
     if args:
         id_range = long(args.get('range', [''])[0])
         id_space = long(args.get('index', [''])[0])
-        record = UniqueIndex.get_or_create(id=id_space, 
+        record = UniqueIndex.get_or_create(id=id_space,
                                            defaults={'unique_index':0})[0]
         index = record.unique_index
         record.unique_index = index + id_range
