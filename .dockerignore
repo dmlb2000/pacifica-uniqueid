@@ -1,3 +1,4 @@
 *.pyproj
 *.sln
 *.v12.suo
+.git
