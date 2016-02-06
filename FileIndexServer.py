@@ -13,18 +13,17 @@ from urlparse import parse_qs
 import os
 import peewee
 
-print "Connecting To Database"
 DB = peewee.MySQLDatabase(os.getenv('MYSQL_ENV_MYSQL_DATABASE'),
                           host=os.getenv('MYSQL_PORT_3306_TCP_ADDR'),
                           port=int(os.getenv('MYSQL_PORT_3306_TCP_PORT')),
                           user=os.getenv('MYSQL_ENV_MYSQL_USER'),
                           passwd=os.getenv('MYSQL_ENV_MYSQL_PASSWORD'))
 
-class Index(peewee.Model):
+class UniqueIndex(peewee.Model):
     """
     ORM model of the index table
     """
-    index = peewee.IntegerField()
+    unique_index = peewee.IntegerField(default=-1)
 
     class Meta(object):
         """
@@ -32,37 +31,20 @@ class Index(peewee.Model):
         """
         database = DB
 
+@DB.atomic()
 def application(environ, start_response):
     """
     The main application
     """
-    print "ping"
     args = parse_qs(environ['QUERY_STRING'])
     if args:
-        try:
-            id_range = long(args.get('range', [''])[0])
-            print "range"
-            print id_range
-            print "connecting"
-            DB.connect()
-
-            print "connected"
-
-            record = Index.select().get()
-            print "record"
-            print record
-
-            index = record.index
-            print "index"
-            print index
-
-        except Exception, ex:
-            print "error on transaction"
-            print ex.message
-            DB.close()
-            return
-        finally:
-            DB.close()
+        id_range = long(args.get('range', [''])[0])
+        id_space = long(args.get('index', [''])[0])
+        record = UniqueIndex.get_or_create(id=id_space, 
+                                           defaults={'unique_index':0})[0]
+        index = record.unique_index
+        record.unique_index = index + id_range
+        record.save()
     else:
         index = -99
         id_range = long(1)
@@ -79,26 +61,10 @@ def application(environ, start_response):
     ]
 
     start_response(status, response_headers)
-    print "success"
-    print response_body
     return [response_body]
 
-print "Starting Up"
-try:
-    print os.getenv('MYSQL_ENV_MYSQL_DATABASE')
-    print os.getenv('MYSQL_PORT_3306_TCP_ADDR')
-    print os.getenv('MYSQL_PORT_3306_TCP_PORT')
-    print os.getenv('MYSQL_ENV_MYSQL_USER')
-    print os.getenv('MYSQL_ENV_MYSQL_PASSWORD')
-
-    Index.create_table()
-
-    # insert initial index
-    INITIAL_RECORD = Index.create(index=9)
-    INITIAL_RECORD.save()
-
-except peewee.OperationalError:
-    print "Error creating Index table"
+if not UniqueIndex.table_exists():
+    UniqueIndex.create_table()
 
 HTTPD = make_server('0.0.0.0', 8051, application)
 HTTPD.serve_forever()

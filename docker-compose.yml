@@ -14,4 +14,4 @@ uniqueid:
   links:
     - uniqueidmysql:mysql
   ports:
-    - 8080:8051
+    - 8181:8051
