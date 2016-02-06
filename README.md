@@ -9,9 +9,22 @@ This service provides unique IDs for other pacifica services.
 
 The Call:
 ```
-curl http://localhost:8000/?range=10
+curl 'http://localhost:8000/?range=10&id=1'
 ```
 The Response
 ```
-{"endIndex": 18, "startIndex": 9}
+{"endIndex": 9, "startIndex": 0}
 ```
+
+Select different id to get different unique IDs
+
+```
+curl 'http://localhost:8000/?range=10&id=2'
+curl 'http://localhost:8000/?range=10&id=3'
+```
+The Response
+```
+{"endIndex": 9, "startIndex": 0}
+{"endIndex": 9, "startIndex": 0}
+```
+

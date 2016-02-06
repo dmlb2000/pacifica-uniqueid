@@ -39,7 +39,7 @@ def application(environ, start_response):
     args = parse_qs(environ['QUERY_STRING'])
     if args:
         id_range = long(args.get('range', [''])[0])
-        id_space = long(args.get('index', [''])[0])
+        id_space = long(args.get('id', [''])[0])
         record = UniqueIndex.get_or_create(id=id_space,
                                            defaults={'unique_index':0})[0]
         index = record.unique_index
