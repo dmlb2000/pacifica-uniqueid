@@ -31,6 +31,8 @@ class UniqueIndex(peewee.Model):
         """
         database = DB
 
+dave = "dip"
+
 @DB.atomic()
 def application(environ, start_response):
     """
