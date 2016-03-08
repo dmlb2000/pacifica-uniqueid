@@ -12,6 +12,19 @@ from urlparse import parse_qs
 
 import os
 import peewee
+import logging
+
+logger = logging.getLogger('peewee')
+logger.setLevel(logging.DEBUG)
+logger.addHandler(logging.StreamHandler())
+
+print os.getenv('PATH')
+print os.getenv('MYSQL_ENV_MYSQL_DATABASE')
+print os.getenv('MYSQL_PORT_3306_TCP_ADDR')
+print os.getenv('MYSQL_PORT_3306_TCP_PORT')
+print os.getenv('MYSQL_ENV_MYSQL_USER')
+print os.getenv('MYSQL_ENV_MYSQL_PASSWORD')
+
 
 DB = peewee.MySQLDatabase(os.getenv('MYSQL_ENV_MYSQL_DATABASE'),
                           host=os.getenv('MYSQL_PORT_3306_TCP_ADDR'),
@@ -19,33 +32,51 @@ DB = peewee.MySQLDatabase(os.getenv('MYSQL_ENV_MYSQL_DATABASE'),
                           user=os.getenv('MYSQL_ENV_MYSQL_USER'),
                           passwd=os.getenv('MYSQL_ENV_MYSQL_PASSWORD'))
 
-class UniqueIndex(peewee.Model):
-    """
-    ORM model of the index table
-    """
-    unique_index = peewee.IntegerField(default=-1)
-
-    class Meta(object):
-        """
-        Internal meta class for the model
-        """
+class BaseModel(peewee.Model):
+    class Meta:
         database = DB
 
-dave = "dip"
+class UniqueIndex(BaseModel):
+    filemode = peewee.BigIntegerField(db_column='fileMode')
+    uploadmode = peewee.BigIntegerField(db_column='uploadMode')
+
+    class Meta:
+        db_table = 'uniqueindex'
 
 @DB.atomic()
 def application(environ, start_response):
     """
     The main application
     """
+    info = environ['PATH_INFO']
+    if info != '/getid':
+        status = '404 NOT FOUND'
+
+        response_body = ''
+
+        response_headers = [
+            ('Content-Type', 'application/json'),
+            ('Content-Length', str(len(response_body)))
+        ]
+
+        start_response(status, response_headers)
+        return [response_body]
+
     args = parse_qs(environ['QUERY_STRING'])
     if args:
         id_range = long(args.get('range', [''])[0])
-        id_space = long(args.get('id', [''])[0])
-        record = UniqueIndex.get_or_create(id=id_space,
-                                           defaults={'unique_index':0})[0]
-        index = record.unique_index
-        record.unique_index = index + id_range
+        id_mode = args.get('mode', [''])[0]
+        #record = UniqueIndex.get_or_create(id == 0, defaults={'filemode':0, 'uploadmode':0})
+
+        record = UniqueIndex.get(UniqueIndex.id == 0)
+
+        if id_mode.lower() == 'filemode':
+            index = record.filemode
+            record.filemode = index + id_range
+        if id_mode.lower() == 'uploadmode':
+            index = record.uploadmode
+            record.uploadmode = index + id_range
+
         record.save()
     else:
         index = -99
