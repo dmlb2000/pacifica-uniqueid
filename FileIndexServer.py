@@ -94,9 +94,7 @@ def application(environ, start_response):
     if args:
         id_range = long(args.get('range', [''])[0])
         id_mode = args.get('mode', [''])[0]
-        record, created = UniqueIndex.get_or_create(id=0, defaults={'file':0, 'upload':0})
-        if created:
-            print "created first record"
+        record = UniqueIndex.get_or_create(id=0, defaults={'file':0, 'upload':0})[0]
 
         if id_mode.lower() == 'file':
             index = record.file
