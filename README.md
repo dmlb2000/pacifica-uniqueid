@@ -9,18 +9,18 @@ This service provides unique IDs for other pacifica services.
 
 The Call:
 ```
-curl 'http://localhost:8000/?range=10&id=1'
+curl 'http://localhost:8000/getid?range=10&mode=file'
 ```
 The Response
 ```
 {"endIndex": 9, "startIndex": 0}
 ```
 
-Select different id to get different unique IDs
+Select a different mode to get different unique IDs.  Currently supported modes are 'file' and 'upload'
 
 ```
-curl 'http://localhost:8000/?range=10&id=2'
-curl 'http://localhost:8000/?range=10&id=3'
+curl 'http://localhost:8000/getid?range=10&mode=file'
+curl 'http://localhost:8000/getid?range=10&mode=upload'
 ```
 The Response
 ```
