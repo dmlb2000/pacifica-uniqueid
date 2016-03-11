@@ -37,8 +37,8 @@ class BaseModel(peewee.Model):
         database = DB
 
 class UniqueIndex(BaseModel):
-    filemode = peewee.BigIntegerField(db_column='fileMode')
-    uploadmode = peewee.BigIntegerField(db_column='uploadMode')
+    file = peewee.BigIntegerField(db_column='file')
+    upload = peewee.BigIntegerField(db_column='upload')
 
     class Meta:
         db_table = 'uniqueindex'
@@ -66,16 +66,14 @@ def application(environ, start_response):
     if args:
         id_range = long(args.get('range', [''])[0])
         id_mode = args.get('mode', [''])[0]
-        #record = UniqueIndex.get_or_create(id == 0, defaults={'filemode':0, 'uploadmode':0})
+        record, created = UniqueIndex.get_or_create(id = 0, defaults={'file':0, 'upload':0})
 
-        record = UniqueIndex.get(UniqueIndex.id == 0)
-
-        if id_mode.lower() == 'filemode':
-            index = record.filemode
-            record.filemode = index + id_range
-        if id_mode.lower() == 'uploadmode':
-            index = record.uploadmode
-            record.uploadmode = index + id_range
+        if id_mode.lower() == 'file':
+            index = record.file
+            record.file = index + id_range
+        if id_mode.lower() == 'upload':
+            index = record.upload
+            record.upload = index + id_range
 
         record.save()
     else:
