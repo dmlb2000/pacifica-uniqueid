@@ -16,7 +16,8 @@ The Response
 {"endIndex": 9, "startIndex": 0}
 ```
 
-Select a different mode to get different unique IDs.  Currently supported modes are 'file' and 'upload'
+Select a different mode to get different unique IDs.  If a mode is currently unsupported by the database,
+a new row will be started to support it
 
 ```
 curl 'http://localhost:8000/getid?range=10&mode=file'
