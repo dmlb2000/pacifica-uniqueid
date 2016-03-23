@@ -25,6 +25,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="FileIndexServer.py" />
+    <Compile Include="index_server_orm.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="index_server_unit_tests.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="index_server_utils.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="set_env_vars.py">
       <SubType>Code</SubType>
     </Compile>

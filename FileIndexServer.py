@@ -20,15 +20,13 @@ The Response:
 # pylint: disable=too-few-public-methods
 
 from wsgiref.simple_server import make_server
-import json
-from urlparse import parse_qs
 
 import os
 import logging
-import peewee
 
 from index_server_orm import UniqueIndex, DB
-from index_server_utils import range_and_mode, valid_request, create_valid_return, create_invalid_return, update_index
+from index_server_utils import range_and_mode, valid_request, \
+                               create_valid_return, create_invalid_return
 
 
 @DB.atomic()
@@ -38,8 +36,8 @@ def application(environ, start_response):
     """
     # catch and handle bogus requests (ex. faveicon)
     valid = valid_request(environ)
-    if (not valid):
-        status, response_headers, response_body = check_for_valid_request(environ)
+    if not valid:
+        status, response_headers, response_body = create_invalid_return()
         start_response(status, response_headers)
         return [response_body]
 
@@ -47,7 +45,8 @@ def application(environ, start_response):
     id_range, id_mode = range_and_mode(environ)
 
     # get the new unique end index
-    index, id_range = update_index(id_range, id_mode)
+    obj = UniqueIndex()
+    index, id_range = obj.update_index(id_range, id_mode)
 
     # create the response with start and end indices
     status, response_headers, response_body = create_valid_return(index, id_range)
@@ -57,26 +56,28 @@ def application(environ, start_response):
     return [response_body]
 
 def main():
+    """
+        entry point for main index server
+    """
+    peewee_logger = logging.getLogger('peewee')
+    peewee_logger.setLevel(logging.DEBUG)
+    peewee_logger.addHandler(logging.StreamHandler())
 
-    LOGGER = logging.getLogger('peewee')
-    LOGGER.setLevel(logging.DEBUG)
-    LOGGER.addHandler(logging.StreamHandler())
+    main_logger = logging.getLogger('index_server')
+    main_logger.setLevel(logging.DEBUG)
+    main_logger.addHandler(logging.StreamHandler())
 
-    INDEX_LOGGER = logging.getLogger('index_server')
-    INDEX_LOGGER.setLevel(logging.DEBUG)
-    INDEX_LOGGER.addHandler(logging.StreamHandler())
-
-    INDEX_LOGGER.info("MYSQL_ENV_MYSQL_DATABASE = " +  os.getenv('MYSQL_ENV_MYSQL_DATABASE'))
-    INDEX_LOGGER.info("MYSQL_PORT_3306_TCP_ADDR = " +  os.getenv('MYSQL_PORT_3306_TCP_ADDR'))
-    INDEX_LOGGER.info("MYSQL_PORT_3306_TCP_PORT = " +  os.getenv('MYSQL_PORT_3306_TCP_PORT'))
-    INDEX_LOGGER.info("MYSQL_ENV_MYSQL_USER = " +  os.getenv('MYSQL_ENV_MYSQL_USER'))
-    INDEX_LOGGER.info("MYSQL_ENV_MYSQL_PASSWORD = " +  os.getenv('MYSQL_ENV_MYSQL_PASSWORD'))
+    main_logger.info("MYSQL_ENV_MYSQL_DATABASE = " +  os.getenv('MYSQL_ENV_MYSQL_DATABASE'))
+    main_logger.info("MYSQL_PORT_3306_TCP_ADDR = " +  os.getenv('MYSQL_PORT_3306_TCP_ADDR'))
+    main_logger.info("MYSQL_PORT_3306_TCP_PORT = " +  os.getenv('MYSQL_PORT_3306_TCP_PORT'))
+    main_logger.info("MYSQL_ENV_MYSQL_USER = " +  os.getenv('MYSQL_ENV_MYSQL_USER'))
+    main_logger.info("MYSQL_ENV_MYSQL_PASSWORD = " +  os.getenv('MYSQL_ENV_MYSQL_PASSWORD'))
 
     if not UniqueIndex.table_exists():
         UniqueIndex.create_table()
 
-    HTTPD = make_server('0.0.0.0', 8051, application)
-    HTTPD.serve_forever()
+    httpd = make_server('0.0.0.0', 8051, application)
+    httpd.serve_forever()
 
 
 if __name__ == '__main__':

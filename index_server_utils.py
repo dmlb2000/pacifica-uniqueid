@@ -1,8 +1,15 @@
+"""
+    testable utilities for index server
+"""
+
 from urlparse import parse_qs
-from index_server_orm import UniqueIndex, DB
+from index_server_orm import UniqueIndex
 import json
 
 def range_and_mode(environ):
+    """
+    parse the parameters for a request from the environ dictionary
+    """
     try:
         args = parse_qs(environ['QUERY_STRING'])
 
@@ -17,12 +24,16 @@ def range_and_mode(environ):
         return (None, None)
 
 def valid_request(environ):
-    # catch and handle bogus requests (ex. faveicon)
+    """
+    catch and handle bogus requests (ex. faveicon)
+    """
     info = environ['PATH_INFO']
     return info == '/getid'
 
 def create_invalid_return():
-    # catch and handle bogus requests (ex. faveicon)
+    """
+    create an error message
+    """
     status = '404 NOT FOUND'
 
     response_body = ''
@@ -34,8 +45,12 @@ def create_invalid_return():
 
     return (status, response_headers, response_body)
 
-def create_valid_return(index, range):
-    id_dict = {'startIndex' : index, 'endIndex': index+range-1}
+def create_valid_return(index, id_range):
+    """
+    creates the dictionary containing the start and stop index
+    packs the message components
+    """
+    id_dict = {'startIndex' : index, 'endIndex': index+id_range-1}
     response_body = json.dumps(id_dict)
 
     status = '200 OK'
@@ -46,17 +61,3 @@ def create_valid_return(index, range):
     ]
 
     return (status, response_headers, response_body)
-
-def update_index(id_range, id_mode):
-
-    if id_range and id_mode:
-        record = UniqueIndex.get_or_create(idid=id_mode, defaults={'index':0})[0]
-
-        index = record.index
-        record.index = index + id_range
-        record.save()
-    else:
-        index = -99
-        id_range = long(1)
-
-    return (index, id_range)
