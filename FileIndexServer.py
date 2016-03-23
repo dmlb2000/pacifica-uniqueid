@@ -28,7 +28,7 @@ import logging
 import peewee
 
 from index_server_orm import UniqueIndex, DB
-from index_server_utils import range_and_mode, check_for_valid_request, create_valid_return, update_index
+from index_server_utils import range_and_mode, valid_request, create_valid_return, create_invalid_return, update_index
 
 
 @DB.atomic()
@@ -37,8 +37,9 @@ def application(environ, start_response):
     The wsgi callback
     """
     # catch and handle bogus requests (ex. faveicon)
-    status, response_headers, response_body = check_for_valid_request(environ)
-    if (status):
+    valid = valid_request(environ)
+    if (not valid):
+        status, response_headers, response_body = check_for_valid_request(environ)
         start_response(status, response_headers)
         return [response_body]
 

@@ -16,22 +16,23 @@ def range_and_mode(environ):
     except KeyError:
         return (None, None)
 
-def check_for_valid_request(environ):
+def valid_request(environ):
     # catch and handle bogus requests (ex. faveicon)
     info = environ['PATH_INFO']
-    if info != '/getid':
-        status = '404 NOT FOUND'
+    return info == '/getid'
 
-        response_body = ''
+def create_invalid_return():
+    # catch and handle bogus requests (ex. faveicon)
+    status = '404 NOT FOUND'
 
-        response_headers = [
-            ('Content-Type', 'application/json'),
-            ('Content-Length', str(len(response_body)))
-        ]
+    response_body = ''
 
-        return (status, response_headers, response_body)
+    response_headers = [
+        ('Content-Type', 'application/json'),
+        ('Content-Length', str(len(response_body)))
+    ]
 
-    return (None, None, None)
+    return (status, response_headers, response_body)
 
 def create_valid_return(index, range):
     id_dict = {'startIndex' : index, 'endIndex': index+range-1}
