@@ -24,7 +24,7 @@ from wsgiref.simple_server import make_server
 import os
 import logging
 
-from index_server_orm import UniqueIndex, DB
+from index_server_orm import UniqueIndex, DB, update_index
 from index_server_utils import range_and_mode, valid_request, \
                                create_valid_return, create_invalid_return
 
@@ -45,8 +45,7 @@ def application(environ, start_response):
     id_range, id_mode = range_and_mode(environ)
 
     # get the new unique end index
-    obj = UniqueIndex()
-    index, id_range = obj.update_index(id_range, id_mode)
+    index, id_range = update_index(id_range, id_mode)
 
     # create the response with start and end indices
     status, response_headers, response_body = create_valid_return(index, id_range)

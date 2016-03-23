@@ -3,7 +3,6 @@
 """
 
 from urlparse import parse_qs
-from index_server_orm import UniqueIndex
 import json
 
 def range_and_mode(environ):
