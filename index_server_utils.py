@@ -5,6 +5,8 @@
 from urlparse import parse_qs
 import json
 
+# pylint: disable=bare-except
+
 def range_and_mode(environ):
     """
     parse the parameters for a request from the environ dictionary
@@ -16,10 +18,9 @@ def range_and_mode(environ):
             id_range = long(args.get('range', [''])[0])
             id_mode = args.get('mode', [''])[0]
             return (id_range, id_mode)
-
         return (None, None)
 
-    except KeyError:
+    except:
         return (None, None)
 
 def valid_request(environ):
@@ -60,3 +61,5 @@ def create_valid_return(index, id_range):
     ]
 
     return (status, response_headers, response_body)
+
+

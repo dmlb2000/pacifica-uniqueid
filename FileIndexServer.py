@@ -45,12 +45,18 @@ def application(environ, start_response):
     id_range, id_mode = range_and_mode(environ)
 
     # get the new unique end index
-    index, id_range = update_index(id_range, id_mode)
+    if id_range and id_mode:
+        index, id_range = update_index(id_range, id_mode)
+        if index and id_range:
+            # create the response with start and end indices
+            status, response_headers, response_body = create_valid_return(index, id_range)
 
-    # create the response with start and end indices
-    status, response_headers, response_body = create_valid_return(index, id_range)
+            # send it back to the requestor
+            start_response(status, response_headers)
+            return [response_body]
 
-    # send it back to the requestor
+    # something bad
+    status, response_headers, response_body = create_invalid_return()
     start_response(status, response_headers)
     return [response_body]
 
