@@ -43,16 +43,16 @@ class IndexServerUnitTests(unittest.TestCase):
             self.assertEqual(index_range, 10)
 
             index, index_range = update_index(None, 'new')
-            self.assertEqual(index, -99)
-            self.assertEqual(index_range, 1)
+            self.assertEqual(index, -1)
+            self.assertEqual(index_range, -1)
 
             index, index_range = update_index(2, None)
-            self.assertEqual(index, -99)
-            self.assertEqual(index_range, 1)
+            self.assertEqual(index, -1)
+            self.assertEqual(index_range, -1)
 
             index, index_range = update_index(-5, 'new')
-            self.assertEqual(index, -99)
-            self.assertEqual(index_range, 1)
+            self.assertEqual(index, -1)
+            self.assertEqual(index_range, -1)
 
     def test_range_and_mode(self):
         """
