@@ -78,8 +78,12 @@ def main():
     main_logger.info("MYSQL_ENV_MYSQL_USER = " +  os.getenv('MYSQL_ENV_MYSQL_USER'))
     main_logger.info("MYSQL_ENV_MYSQL_PASSWORD = " +  os.getenv('MYSQL_ENV_MYSQL_PASSWORD'))
 
+    DB.connect()
+
     if not UniqueIndex.table_exists():
         UniqueIndex.create_table()
+
+    DB.close()
 
     httpd = make_server('0.0.0.0', 8051, application)
     httpd.serve_forever()
