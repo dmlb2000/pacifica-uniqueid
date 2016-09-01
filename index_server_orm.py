@@ -41,33 +41,46 @@ class UniqueIndex(BaseModel):
         """
         db_table = 'uniqueindex'
 
+def database_connect():
+    """Makes sure database is connected.  Trying to connect a second
+    time doesnt cause any problems"""
+    DB.connect()
+
+def database_close():
+    """Closes the database connection. Closing already closed database
+    throws an error so catch it and continue on"""
+    try:
+        DB.close()
+    except ProgrammingError:
+        #error for closing an already closed database so continue on
+        Return
+
+
 def update_index(id_range, id_mode):
     """
     updates the index for a mode and returns a unique start and stop index
     """
 
-    DB.connect()
+    database_connect()
 
     index = -1
     range = id_range
     
-    try:
+    with DB.atomic():
+        try:
 
-        if id_range and id_mode and id_range > 0:
-            record = UniqueIndex.get_or_create(idid=id_mode, defaults={'index':0})[0]
+            if id_range and id_mode and id_range > 0:
+                record = UniqueIndex.get_or_create(idid=id_mode, defaults={'index':0})[0]
 
-            index = record.index
-            record.index = index + id_range
-            record.save()
-        else:
+                index = record.index
+                record.index = index + id_range
+                record.save()
+            else:
+                index = -1
+                range = long(-1)
+        except peewee.OperationalError, e:
             index = -1
             range = long(-1)
-    except peewee.OperationalError, e:
-        index = -1
-        range = long(-1)
-    finally: 
-        if not DB.is_closed():
-            DB.close()
 
     return (index, range)
 
