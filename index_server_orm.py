@@ -82,5 +82,7 @@ def update_index(id_range, id_mode):
             index = -1
             range = long(-1)
 
+    database_close()
+
     return (index, range)
 
