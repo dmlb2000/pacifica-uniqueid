@@ -23,42 +23,48 @@ from wsgiref.simple_server import make_server
 
 import os
 import logging
-
-from index_server_orm import UniqueIndex, DB, update_index
+import peewee
+from index_server_orm import UniqueIndex, update_index
 from index_server_utils import range_and_mode, valid_request, \
                                create_valid_return, create_invalid_return
 
-
-@DB.atomic()
 def application(environ, start_response):
     """
     The wsgi callback
     """
-    # catch and handle bogus requests (ex. faveicon)
-    valid = valid_request(environ)
-    if not valid:
-        status, response_headers, response_body = create_invalid_return()
-        start_response(status, response_headers)
-        return [response_body]
-
-    # get the index range and index mode from the query string
-    id_range, id_mode = range_and_mode(environ)
-
-    # get the new unique end index
-    if id_range and id_mode:
-        index, id_range = update_index(id_range, id_mode)
-        if index and id_range:
-            # create the response with start and end indices
-            status, response_headers, response_body = create_valid_return(index, id_range)
-
-            # send it back to the requestor
+    try:
+        # catch and handle bogus requests (ex. faveicon)
+        valid = valid_request(environ)
+        if not valid:
+            status, response_headers, response_body = create_invalid_return()
             start_response(status, response_headers)
             return [response_body]
 
-    # something bad
-    status, response_headers, response_body = create_invalid_return()
-    start_response(status, response_headers)
-    return [response_body]
+        # get the index range and index mode from the query string
+        id_range, id_mode = range_and_mode(environ)
+
+        # get the new unique end index
+        if id_range and id_mode:
+            UniqueIndex.database_connect()
+            index, id_range = update_index(id_range, id_mode)
+            UniqueIndex.database_close()
+            if index and id_range:
+                # create the response with start and end indices
+                status, response_headers, response_body = create_valid_return(index, id_range)
+
+                # send it back to the requestor
+                start_response(status, response_headers)
+                return [response_body]
+
+        # something bad
+        status, response_headers, response_body = create_invalid_return()
+        start_response(status, response_headers)
+        return [response_body]
+    except peewee.OperationalError, ex:
+        peewee_logger = logging.getLogger('peewee')
+        peewee_logger.setLevel(logging.DEBUG)
+        peewee_logger.addHandler(logging.StreamHandler())
+        peewee_logger.warn("OperationalError(%s)", str(ex))
 
 def main():
     """
@@ -72,18 +78,18 @@ def main():
     main_logger.setLevel(logging.DEBUG)
     main_logger.addHandler(logging.StreamHandler())
 
-    main_logger.info("MYSQL_ENV_MYSQL_DATABASE = " +  os.getenv('MYSQL_ENV_MYSQL_DATABASE'))
-    main_logger.info("MYSQL_PORT_3306_TCP_ADDR = " +  os.getenv('MYSQL_PORT_3306_TCP_ADDR'))
-    main_logger.info("MYSQL_PORT_3306_TCP_PORT = " +  os.getenv('MYSQL_PORT_3306_TCP_PORT'))
-    main_logger.info("MYSQL_ENV_MYSQL_USER = " +  os.getenv('MYSQL_ENV_MYSQL_USER'))
-    main_logger.info("MYSQL_ENV_MYSQL_PASSWORD = " +  os.getenv('MYSQL_ENV_MYSQL_PASSWORD'))
+    main_logger.info("MYSQL_ENV_MYSQL_DATABASE = %s", os.getenv('MYSQL_ENV_MYSQL_DATABASE'))
+    main_logger.info("MYSQL_PORT_3306_TCP_ADDR = %s", os.getenv('MYSQL_PORT_3306_TCP_ADDR'))
+    main_logger.info("MYSQL_PORT_3306_TCP_PORT = %s", os.getenv('MYSQL_PORT_3306_TCP_PORT'))
+    main_logger.info("MYSQL_ENV_MYSQL_USER = %s", os.getenv('MYSQL_ENV_MYSQL_USER'))
+    main_logger.info("MYSQL_ENV_MYSQL_PASSWORD = %s", os.getenv('MYSQL_ENV_MYSQL_PASSWORD'))
 
-    DB.connect()
+    UniqueIndex.database_connect()
 
     if not UniqueIndex.table_exists():
         UniqueIndex.create_table()
 
-    DB.close()
+    UniqueIndex.database_close()
 
     httpd = make_server('0.0.0.0', 8051, application)
     httpd.serve_forever()

@@ -2,17 +2,11 @@
     index server unit and integration tests
 """
 import unittest
-from index_server_orm import UniqueIndex, BaseModel, update_index
-
-from index_server_utils import range_and_mode, create_invalid_return,\
-                               create_valid_return, valid_request
-
 from playhouse.test_utils import test_database
 from peewee import SqliteDatabase
-
-# pylint: disable=too-few-public-methods
-
-TEST_DB = SqliteDatabase(':memory:')
+from index_server_orm import UniqueIndex, update_index
+from index_server_utils import range_and_mode, create_invalid_return,\
+                               create_valid_return, valid_request
 
 class IndexServerUnitTests(unittest.TestCase):
     """
@@ -22,7 +16,7 @@ class IndexServerUnitTests(unittest.TestCase):
         """
         test return and update of unique index
         """
-        with test_database(TEST_DB, (BaseModel, UniqueIndex)):
+        with test_database(SqliteDatabase(':memory:'), [UniqueIndex]):
             test_object = UniqueIndex.create(idid='file', index=892)
             self.assertEqual(test_object.idid, 'file')
 

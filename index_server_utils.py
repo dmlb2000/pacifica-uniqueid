@@ -61,5 +61,3 @@ def create_valid_return(index, id_range):
     ]
 
     return (status, response_headers, response_body)
-
-
