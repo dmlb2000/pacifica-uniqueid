@@ -23,10 +23,14 @@ from wsgiref.simple_server import make_server
 
 import os
 import logging
+from time import sleep
 import peewee
 from index_server_orm import UniqueIndex, update_index
 from index_server_utils import range_and_mode, valid_request, \
                                create_valid_return, create_invalid_return
+
+DATABASE_CONNECT_ATTEMPTS = 15
+DATABASE_WAIT = 1
 
 def application(environ, start_response):
     """
@@ -84,8 +88,19 @@ def main():
     main_logger.info("MYSQL_ENV_MYSQL_USER = %s", os.getenv('MYSQL_ENV_MYSQL_USER'))
     main_logger.info("MYSQL_ENV_MYSQL_PASSWORD = %s", os.getenv('MYSQL_ENV_MYSQL_PASSWORD'))
 
-    UniqueIndex.database_connect()
+    def try_db_connect(attempts=0):
+        """Try connecting to the db"""
+        try:
+            UniqueIndex.database_connect()
+        except peewee.OperationalError, ex:
+            if attempts < DATABASE_CONNECT_ATTEMPTS:
+                sleep(DATABASE_WAIT)
+                attempts += 1
+                try_db_connect(attempts)
+            else:
+                raise ex
 
+    try_db_connect()
     if not UniqueIndex.table_exists():
         UniqueIndex.create_table()
 
