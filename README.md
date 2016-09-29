@@ -1,5 +1,8 @@
 # Pacifica Unique ID 
 [![Build Status](https://travis-ci.org/EMSL-MSC/pacifica-uniqueid.svg?branch=master)](https://travis-ci.org/EMSL-MSC/pacifica-uniqueid)
+[![Code Climate](https://codeclimate.com/github/EMSL-MSC/pacifica-uniqueid/badges/gpa.svg)](https://codeclimate.com/github/EMSL-MSC/pacifica-uniqueid)
+[![Test Coverage](https://codeclimate.com/github/EMSL-MSC/pacifica-uniqueid/badges/coverage.svg)](https://codeclimate.com/github/EMSL-MSC/pacifica-uniqueid/coverage)
+[![Issue Count](https://codeclimate.com/github/EMSL-MSC/pacifica-uniqueid/badges/issue_count.svg)](https://codeclimate.com/github/EMSL-MSC/pacifica-uniqueid)
 
 This is the pacifica unique ID generator API.
 
