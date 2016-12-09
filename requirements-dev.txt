@@ -1,0 +1,8 @@
+codeclimate-test-reporter
+coverage
+MySQL-python
+peewee
+pre-commit
+pylint
+pytest
+radon

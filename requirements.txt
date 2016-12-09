@@ -1,5 +1,2 @@
 MySQL-python
 peewee
-pylint
-coverage
-codeclimate-test-reporter

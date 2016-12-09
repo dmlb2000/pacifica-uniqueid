@@ -1,21 +1,19 @@
-"""
-    index server unit and integration tests
-"""
+#!/usr/bin/python
+"""Index server unit and integration tests."""
+from __future__ import print_function
 import unittest
 from playhouse.test_utils import test_database
 from peewee import SqliteDatabase
-from index_server_orm import UniqueIndex, update_index
-from index_server_utils import range_and_mode, create_invalid_return,\
+from uniqueid.orm import UniqueIndex, update_index
+from uniqueid.utils import range_and_mode, create_invalid_return,\
                                create_valid_return, valid_request
 
+
 class IndexServerUnitTests(unittest.TestCase):
-    """
-    index server unit and integration tests
-    """
+    """Index server unit and integration tests."""
+
     def test_index_update(self):
-        """
-        test return and update of unique index
-        """
+        """Test return and update of unique index."""
         with test_database(SqliteDatabase(':memory:'), [UniqueIndex]):
             test_object = UniqueIndex.create(idid='file', index=892)
             self.assertEqual(test_object.idid, 'file')
@@ -49,9 +47,7 @@ class IndexServerUnitTests(unittest.TestCase):
             self.assertEqual(index_range, -1)
 
     def test_range_and_mode(self):
-        """
-        test parsing of environ dictionary
-        """
+        """Test parsing of environ dictionary."""
         environ = {}
         environ['QUERY_STRING'] = 'range=10&mode=file'
         id_range, id_mode = range_and_mode(environ)
@@ -69,9 +65,7 @@ class IndexServerUnitTests(unittest.TestCase):
         self.assertEqual(id_mode, None)
 
     def test_valid_request(self):
-        """
-        catch and handle bogus requests (ex. faveicon)
-        """
+        """Catch and handle bogus requests (ex. faveicon)."""
         environ = {}
         environ['PATH_INFO'] = '/getid'
         val = valid_request(environ)
@@ -82,9 +76,7 @@ class IndexServerUnitTests(unittest.TestCase):
         self.assertEqual(val, False)
 
     def test_create_invalid_return(self):
-        """
-        catch and handle bogus requests (ex. faveicon)
-        """
+        """Catch and handle bogus requests (ex. faveicon)."""
         status, response_headers, response_body = create_invalid_return()
 
         self.assertEqual(status, '404 NOT FOUND')
@@ -96,9 +88,7 @@ class IndexServerUnitTests(unittest.TestCase):
         self.assertEqual(response_headers[1][1], '0')
 
     def test_create_valid_return(self):
-        """
-        catch and handle bogus requests (ex. faveicon)
-        """
+        """Catch and handle bogus requests (ex. faveicon)."""
         status, response_headers, response_body = create_valid_return(333, 10)
 
         self.assertEqual(status, '200 OK')
@@ -110,7 +100,6 @@ class IndexServerUnitTests(unittest.TestCase):
         self.assertEqual(response_headers[1][1], '36')
 
 
-
 if __name__ == '__main__':
     unittest.main()
-    print 'test complete'
+    print('test complete')

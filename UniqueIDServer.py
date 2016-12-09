@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-UniqueID Server
+UniqueID Server.
 
 The Call: curl 'http://localhost:8000/getid?range=10&mode=file'
 
@@ -16,26 +16,22 @@ The Response:
 {"endIndex": 9, "startIndex": 0}
 {"endIndex": 9, "startIndex": 0}
 """
-# disable this for classes Index and Meta (within Index)
-# pylint: disable=too-few-public-methods
-
 from wsgiref.simple_server import make_server
 
 import os
 import logging
 from time import sleep
 import peewee
-from index_server_orm import UniqueIndex, update_index
-from index_server_utils import range_and_mode, valid_request, \
+from uniqueid.orm import UniqueIndex, update_index
+from uniqueid.utils import range_and_mode, valid_request, \
                                create_valid_return, create_invalid_return
 
 DATABASE_CONNECT_ATTEMPTS = 15
-DATABASE_WAIT = 1
+DATABASE_WAIT = 3
+
 
 def application(environ, start_response):
-    """
-    The wsgi callback
-    """
+    """The wsgi callback."""
     try:
         # catch and handle bogus requests (ex. faveicon)
         valid = valid_request(environ)
@@ -52,7 +48,7 @@ def application(environ, start_response):
             UniqueIndex.database_connect()
             index, id_range = update_index(id_range, id_mode)
             UniqueIndex.database_close()
-            if index and id_range:
+            if index >= 0 and id_range:
                 # create the response with start and end indices
                 status, response_headers, response_body = create_valid_return(index, id_range)
 
@@ -64,16 +60,15 @@ def application(environ, start_response):
         status, response_headers, response_body = create_invalid_return()
         start_response(status, response_headers)
         return [response_body]
-    except peewee.OperationalError, ex:
+    except peewee.OperationalError as ex:
         peewee_logger = logging.getLogger('peewee')
         peewee_logger.setLevel(logging.DEBUG)
         peewee_logger.addHandler(logging.StreamHandler())
-        peewee_logger.warn("OperationalError(%s)", str(ex))
+        peewee_logger.warn('OperationalError(%s)', str(ex))
+
 
 def main():
-    """
-        entry point for main index server
-    """
+    """Entry point for main index server."""
     peewee_logger = logging.getLogger('peewee')
     peewee_logger.setLevel(logging.DEBUG)
     peewee_logger.addHandler(logging.StreamHandler())
@@ -82,17 +77,17 @@ def main():
     main_logger.setLevel(logging.DEBUG)
     main_logger.addHandler(logging.StreamHandler())
 
-    main_logger.info("MYSQL_ENV_MYSQL_DATABASE = %s", os.getenv('MYSQL_ENV_MYSQL_DATABASE'))
-    main_logger.info("MYSQL_PORT_3306_TCP_ADDR = %s", os.getenv('MYSQL_PORT_3306_TCP_ADDR'))
-    main_logger.info("MYSQL_PORT_3306_TCP_PORT = %s", os.getenv('MYSQL_PORT_3306_TCP_PORT'))
-    main_logger.info("MYSQL_ENV_MYSQL_USER = %s", os.getenv('MYSQL_ENV_MYSQL_USER'))
-    main_logger.info("MYSQL_ENV_MYSQL_PASSWORD = %s", os.getenv('MYSQL_ENV_MYSQL_PASSWORD'))
+    main_logger.info('MYSQL_ENV_MYSQL_DATABASE = %s', os.getenv('MYSQL_ENV_MYSQL_DATABASE', 'pacifica_uniqueid'))
+    main_logger.info('MYSQL_PORT_3306_TCP_ADDR = %s', os.getenv('MYSQL_PORT_3306_TCP_ADDR', '127.0.0.1'))
+    main_logger.info('MYSQL_PORT_3306_TCP_PORT = %s', os.getenv('MYSQL_PORT_3306_TCP_PORT', 3306))
+    main_logger.info('MYSQL_ENV_MYSQL_USER = %s', os.getenv('MYSQL_ENV_MYSQL_USER', 'uniqueid'))
+    main_logger.info('MYSQL_ENV_MYSQL_PASSWORD = %s', os.getenv('MYSQL_ENV_MYSQL_PASSWORD', 'uniqueid'))
 
     def try_db_connect(attempts=0):
-        """Try connecting to the db"""
+        """Try connecting to the db."""
         try:
             UniqueIndex.database_connect()
-        except peewee.OperationalError, ex:
+        except peewee.OperationalError as ex:
             if attempts < DATABASE_CONNECT_ATTEMPTS:
                 sleep(DATABASE_WAIT)
                 attempts += 1
