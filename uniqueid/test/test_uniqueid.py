@@ -59,6 +59,11 @@ class IndexServerUnitTests(unittest.TestCase):
         self.assertEqual(id_range, None)
         self.assertEqual(id_mode, None)
 
+        environ['QUERY_STRING'] = ''
+        id_range, id_mode = range_and_mode(environ)
+        self.assertEqual(id_range, None)
+        self.assertEqual(id_mode, None)
+
         environ['BEERY_STRING'] = 'range=10&mode=file'
         id_range, id_mode = range_and_mode(environ)
         self.assertEqual(id_range, None)
@@ -100,6 +105,6 @@ class IndexServerUnitTests(unittest.TestCase):
         self.assertEqual(response_headers[1][1], '36')
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma no cover
     unittest.main()
     print('test complete')

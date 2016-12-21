@@ -16,18 +16,25 @@ The Response:
 {"endIndex": 9, "startIndex": 0}
 {"endIndex": 9, "startIndex": 0}
 """
+from __future__ import print_function
 from wsgiref.simple_server import make_server
 
 import os
+import sys
+import signal
 import logging
-from time import sleep
 import peewee
-from uniqueid.orm import UniqueIndex, update_index
+from uniqueid.orm import UniqueIndex, update_index, try_db_connect
 from uniqueid.utils import range_and_mode, valid_request, \
                                create_valid_return, create_invalid_return
 
-DATABASE_CONNECT_ATTEMPTS = 15
-DATABASE_WAIT = 3
+
+# pylint: disable=unused-argument
+def exit_handler(signum, frame):
+    """Catch term and exit cleanly."""
+    print('Exiting cleanly from {0}'.format(signum))
+    sys.exit(signum)
+# pylint: enable=unused-argument
 
 
 def application(environ, start_response):
@@ -54,6 +61,8 @@ def application(environ, start_response):
 
                 # send it back to the requestor
                 start_response(status, response_headers)
+                main_logger = logging.getLogger('index_server')
+                main_logger.debug('got to end of block not being covered')
                 return [response_body]
 
         # something bad
@@ -69,6 +78,8 @@ def application(environ, start_response):
 
 def main():
     """Entry point for main index server."""
+    signal.signal(signal.SIGTERM, exit_handler)
+
     peewee_logger = logging.getLogger('peewee')
     peewee_logger.setLevel(logging.DEBUG)
     peewee_logger.addHandler(logging.StreamHandler())
@@ -83,18 +94,6 @@ def main():
     main_logger.info('MYSQL_ENV_MYSQL_USER = %s', os.getenv('MYSQL_ENV_MYSQL_USER', 'uniqueid'))
     main_logger.info('MYSQL_ENV_MYSQL_PASSWORD = %s', os.getenv('MYSQL_ENV_MYSQL_PASSWORD', 'uniqueid'))
 
-    def try_db_connect(attempts=0):
-        """Try connecting to the db."""
-        try:
-            UniqueIndex.database_connect()
-        except peewee.OperationalError as ex:
-            if attempts < DATABASE_CONNECT_ATTEMPTS:
-                sleep(DATABASE_WAIT)
-                attempts += 1
-                try_db_connect(attempts)
-            else:
-                raise ex
-
     try_db_connect()
     if not UniqueIndex.table_exists():
         UniqueIndex.create_table()
@@ -105,5 +104,6 @@ def main():
     httpd.serve_forever()
 
 
-if __name__ == '__main__':
+# main() never returns so we can't ever register coverage for this block.
+if __name__ == '__main__':  # pragma no cover
     main()
