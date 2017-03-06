@@ -28,4 +28,6 @@ wait
 
 coverage combine -a .coverage.*
 coverage report --show-missing
-codeclimate-test-reporter
+if [[ $CODECLIMATE_REPO_TOKEN ]] ; then
+  codeclimate-test-reporter
+fi
