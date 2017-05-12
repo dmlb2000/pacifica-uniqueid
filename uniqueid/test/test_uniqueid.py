@@ -27,11 +27,11 @@ class IndexServerUnitTests(unittest.TestCase):
             self.assertEqual(index_range, 10)
 
             index, index_range = update_index(10, 'new')
-            self.assertEqual(index, 0)
+            self.assertEqual(index, 1)
             self.assertEqual(index_range, 10)
 
             index, index_range = update_index(10, 'new')
-            self.assertEqual(index, 10)
+            self.assertEqual(index, 11)
             self.assertEqual(index_range, 10)
 
             index, index_range = update_index(None, 'new')

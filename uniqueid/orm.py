@@ -72,7 +72,7 @@ def update_index(id_range, id_mode):
     id_range = id_range
     with UniqueIndex.atomic():
         if id_range and id_mode and id_range > 0:
-            record = UniqueIndex.get_or_create(idid=id_mode, defaults={'index': 0})[0]
+            record = UniqueIndex.get_or_create(idid=id_mode, defaults={'index': 1})[0]
             index = int(record.index)
             record.index = index + id_range
             record.save()
