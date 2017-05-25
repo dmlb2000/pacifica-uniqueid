@@ -10,9 +10,9 @@ class TestUniqueID(unittest.TestCase):
 
     url = 'http://127.0.0.1:8051/getid?range={range}&mode={mode}'
 
-    def _url(self, range, mode):
+    def _url(self, id_range, mode):
         """Return the parsed url."""
-        return self.url.format(range=range, mode=mode)
+        return self.url.format(range=id_range, mode=mode)
 
     def test_working_stuff(self):
         """Test the good working bits."""
