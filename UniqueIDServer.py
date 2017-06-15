@@ -55,7 +55,7 @@ def application(environ, start_response):
             UniqueIndex.database_connect()
             index, id_range = update_index(id_range, id_mode)
             UniqueIndex.database_close()
-            if index >= 0 and id_range:
+            if index >= 0 and id_range:  # pragma: no cover
                 # create the response with start and end indices
                 status, response_headers, response_body = create_valid_return(index, id_range)
 

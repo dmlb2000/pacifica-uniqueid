@@ -1,10 +1,7 @@
 #!/bin/bash -xe
 
-sudo service postgresql stop
-sudo service mysql stop
-if [ -z "$RUN_LINTS" ]; then
-  docker-compose up -d uniqueidmysql
-fi
+mysql -e 'CREATE DATABASE pacifica_uniqueid;'
+mysql -e 'CREATE DATABASE pacifica_uniqueid2;'
 case "$TRAVIS_PYTHON_VERSION" in
   pypy) export PYPY_VERSION="pypy-2.6.1" ;;
   pypy3) export PYPY_VERSION="pypy3-2.4.0" ;;
@@ -23,5 +20,5 @@ fi
 if [ "$RUN_LINTS" = "true" ]; then
   pip install pre-commit
 else
-  pip install codeclimate-test-reporter coverage nose pytest
+  pip install pytest
 fi
