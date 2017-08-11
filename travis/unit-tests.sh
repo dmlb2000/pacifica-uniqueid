@@ -1,5 +1,5 @@
 #!/bin/bash -xe
-export MYSQL_ENV_MYSQL_USER=travis
+export MYSQL_ENV_MYSQL_USER=root
 export MYSQL_ENV_MYSQL_PASSWORD=
 coverage erase
 rm -vf .coverage.*
