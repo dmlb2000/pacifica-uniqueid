@@ -54,10 +54,13 @@ def main():
             if not resp:
                 respqueue.task_done()
                 break
-            buf += '{resp},{job}\n'.format(**resp)
+            buf += '{job},{resp}\n'.format(**resp)
             if len(buf) > bufsize:
                 data_log.write(buf)
                 buf = ''
+            respqueue.task_done()
+        if buf:
+            data_log.write(buf)
         data_log.close()
 
     # start the threads
@@ -72,7 +75,7 @@ def main():
     respt.start()
 
     # do the work
-    for job_id in range(1000):
+    for job_id in range(1, 1000):
         workqueue.put(job_id)
 
     # end the work
