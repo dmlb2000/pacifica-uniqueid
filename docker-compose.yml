@@ -20,4 +20,4 @@ services:
       - 8051:8051
     environment:
       MYSQL_PORT_3306_TCP_ADDR: mysql
-    command: -p 2
+    command: -p 1
