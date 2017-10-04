@@ -31,7 +31,7 @@ class TestUniqueID(unittest.TestCase):
         self.assertEqual(parts['endIndex'], 12)
 
         req = requests.get(self._url('blah', 'foo'))
-        self.assertEqual(req.status_code, 404)
+        self.assertEqual(req.status_code, 500)
 
         req = requests.get('http://127.0.0.1:8051/blah')
         self.assertEqual(req.status_code, 404)

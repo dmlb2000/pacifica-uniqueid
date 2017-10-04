@@ -45,6 +45,8 @@ class UniqueIndex(peewee.Model):
         peewee_logger = logging.getLogger('peewee')
         peewee_logger.debug('Connecting to database.')
         # pylint: disable=no-member
+        if not cls._meta.database.is_closed():  # pragma no cover
+            cls._meta.database.close()
         cls._meta.database.connect()
         # pylint: enable=no-member
 
@@ -57,13 +59,10 @@ class UniqueIndex(peewee.Model):
         """
         peewee_logger = logging.getLogger('peewee')
         peewee_logger.debug('Closing database connection.')
-        try:
-            # pylint: disable=no-member
+        # pylint: disable=no-member
+        if not cls._meta.database.is_closed():  # pragma no cover
             cls._meta.database.close()
-            # pylint: enable=no-member
-        except peewee.ProgrammingError:  # pragma no cover
-            # error for closing an already closed database so continue on
-            return
+        # pylint: enable=no-member
 
 
 def update_index(id_range, id_mode):
@@ -93,3 +92,10 @@ def try_db_connect(attempts=0):
             try_db_connect(attempts)
         else:
             raise ex
+
+
+def create_tables():
+    """Create the tables nessisary."""
+    try_db_connect()
+    if not UniqueIndex.table_exists():
+        UniqueIndex.create_table()
