@@ -12,5 +12,8 @@ setup(name='PacificaUniqueID',
       author='David Brown',
       author_email='david.brown@pnnl.gov',
       packages=['uniqueid', 'uniqueid.test'],
+      entry_point={
+          'console_scripts': ['UniqueIDServer=uniqueid:main']
+      },
       scripts=['UniqueIDServer.py', 'DatabaseCreate.py'],
       install_requires=[str(ir.req) for ir in INSTALL_REQS])
