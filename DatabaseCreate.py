@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 """Create the unique index database schema."""
 from uniqueid.orm import UniqueIndex, try_db_connect
 

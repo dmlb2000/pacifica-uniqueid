@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """UniqueID CherryPy Module."""
 from __future__ import print_function
 import cherrypy
@@ -21,7 +22,7 @@ class GetID(object):
         id_mode = kwargs.get('mode', -1)
         index, id_range = update_index(id_range, id_mode)
         UniqueIndex.database_close()
-        return {'startIndex': index, 'endIndex': index+id_range-1}
+        return {'startIndex': index, 'endIndex': index + id_range - 1}
     # pylint: enable=invalid-name
 
 

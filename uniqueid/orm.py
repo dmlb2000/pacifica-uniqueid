@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 """ORM for index server."""
 import os
 import logging
@@ -8,7 +9,8 @@ import peewee
 # pylint: disable=too-few-public-methods
 
 DB = peewee.MySQLDatabase(os.getenv('MYSQL_ENV_MYSQL_DATABASE', 'pacifica_uniqueid'),
-                          host=os.getenv('MYSQL_PORT_3306_TCP_ADDR', '127.0.0.1'),
+                          host=os.getenv(
+                              'MYSQL_PORT_3306_TCP_ADDR', '127.0.0.1'),
                           port=int(os.getenv('MYSQL_PORT_3306_TCP_PORT', 3306)),
                           user=os.getenv('MYSQL_ENV_MYSQL_USER', 'uniqueid'),
                           passwd=os.getenv('MYSQL_ENV_MYSQL_PASSWORD', 'uniqueid'))
@@ -71,7 +73,8 @@ def update_index(id_range, id_mode):
     id_range = id_range
     with UniqueIndex.atomic():
         if id_range and id_mode and id_range > 0:
-            record = UniqueIndex.get_or_create(idid=id_mode, defaults={'index': 1})[0]
+            record = UniqueIndex.get_or_create(
+                idid=id_mode, defaults={'index': 1})[0]
             index = int(record.index)
             record.index = index + id_range
             record.save()
