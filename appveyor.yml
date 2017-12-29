@@ -1,0 +1,56 @@
+version: 0.1.{build}
+pull_requests:
+  do_not_increment_build_number: true
+
+environment:
+  MYSQL_HOST: localhost
+  MYSQL_USER: root
+  MYSQL_PASSWORD: Password12!
+  MYSQL_PATH: C:\Program Files\MySQL\MySQL Server 5.7
+  MYSQL_ENV_MYSQL_USER: root
+  MYSQL_ENV_MYSQL_PASSWORD: Password12!
+
+  matrix:
+    - PYTHON: C:\Python27-x64
+
+services:
+  - mysql
+
+before_test:
+  - SET PATH=%MYSQL_PATH%\bin;%PATH%
+  - mysqladmin --host=%MYSQL_HOST% --user=%MYSQL_USER% --password=%MYSQL_PASSWORD% create pacifica_uniqueid
+  - mysqladmin --host=%MYSQL_HOST% --user=%MYSQL_USER% --password=%MYSQL_PASSWORD% create pacifica_uniqueid2
+
+install:
+  - '%PYTHON%\python.exe -m pip install -r requirements-dev.txt'
+
+build: off
+
+test_script:
+  - ps: >
+      Get-Service | grep -i mysql;
+      $env:MYSQL_ENV_MYSQL_DATABASE = 'pacifica_uniqueid2';
+      Stop-Service MySQL57;
+      echo "============= Trying to create database w/o MySQL =====================";
+      & "$env:PYTHON\python.exe" -m coverage run UniqueIDServer.py;
+      Start-Service MySQL57;
+      $env:MYSQL_ENV_MYSQL_DATABASE = 'pacifica_uniqueid';
+      echo "============= Trying to create database =====================";
+      & "$env:PYTHON\python.exe" -m coverage run -a DatabaseCreate.py;
+      echo "============= Trying to start server =====================";
+      $proc = Start-Process $env:PYTHON\python.exe -ArgumentList "-m coverage run --include='uniqueid/*' -p -m uniqueid --stop-after-a-moment" -PassThru -RedirectStandardError server-error.log -RedirectStandardOutput server-output.log;
+      sleep 2;
+      echo "============= Trying to run tests =====================";
+      & "$env:PYTHON\python.exe" -m coverage run --include='uniqueid/*' -a -m pytest uniqueid -v;
+      $test_rc = $?;
+      if ( ! $test_rc ) {
+              echo "================ Server Error ================";
+              cat server-error.log;
+              echo "================ Server Output ================";
+              cat server-output.log;
+              echo "================ End Logs ================";
+              exit $test_rc;
+      }
+      $proc | Wait-Process;
+      ls .coverage.* | %{ & "$env:PYTHON\python.exe" -m coverage combine -a $_.name };
+      & "$env:PYTHON\python.exe" -m coverage report -m --fail-under=100;

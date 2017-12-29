@@ -18,9 +18,9 @@ The Response:
 {"endIndex": 9, "startIndex": 0}
 """
 import cherrypy
-from uniqueid.globals import CHERRYPY_CONFIG
-from uniqueid import main, error_page_default
+from uniqueid.__main__ import main, error_page_default
 from uniqueid.rest import Root
+from uniqueid.globals import CHERRYPY_CONFIG
 
 
 cherrypy.config.update({'error_page.default': error_page_default})

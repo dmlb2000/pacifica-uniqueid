@@ -11,24 +11,23 @@ sudo service mysql stop
 coverage run -p UniqueIDServer.py || true
 sudo service mysql start
 sleep 5
-coverage run -p UniqueIDServer.py &
+coverage run -p -m uniqueid --stop-after-a-moment &
 SERVER_PID=$!
 while ! curl -s -o /dev/null localhost:8051
 do
   sleep 1
 done
 coverage run -p -m pytest -v
-kill $SERVER_PID
 wait
 
 # break mysql after successfully starting
-coverage run -p UniqueIDServer.py &
+coverage run -p UniqueIDServer.py --stop-after-a-moment &
 SERVER_PID=$!
-sleep 5
+sleep 2
 curl 'localhost:8051/getid?range=10&mode=file' || true
 sudo service mysql stop
+sleep 1
 curl 'localhost:8051/getid?range=10&mode=file' || true
-kill $SERVER_PID
 wait
 
 coverage combine -a .coverage.*

@@ -1,3 +1,3 @@
 cherrypy
-MySQL-python
 peewee
+pymysql

@@ -6,8 +6,6 @@ import logging
 from time import sleep
 import peewee
 
-# pylint: disable=too-few-public-methods
-
 DB = peewee.MySQLDatabase(os.getenv('MYSQL_ENV_MYSQL_DATABASE', 'pacifica_uniqueid'),
                           host=os.getenv(
                               'MYSQL_PORT_3306_TCP_ADDR', '127.0.0.1'),
@@ -24,11 +22,13 @@ class UniqueIndex(peewee.Model):
     idid = peewee.CharField(primary_key=True, db_column='id')
     index = peewee.BigIntegerField(db_column='index')
 
+    # pylint: disable=too-few-public-methods
     class Meta(object):
         """Map to the database connected above."""
 
         database = DB
         only_save_dirty = True
+    # pylint: enable=too-few-public-methods
 
     @classmethod
     def atomic(cls):
