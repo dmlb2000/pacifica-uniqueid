@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """Setup and install the UniqueID service."""
 from pip.req import parse_requirements
-from setuptools import setup
+from setuptools import setup, find_packages
 
 # parse_requirements() returns generator of pip.req.InstallRequirement objects
 INSTALL_REQS = parse_requirements('requirements.txt', session='hack')
@@ -14,8 +14,8 @@ setup(
     description='Pacifica UniqueID',
     author='David Brown',
     author_email='david.brown@pnnl.gov',
-    packages=['uniqueid', 'uniqueid.test'],
-    entry_point={
+    packages=find_packages(),
+    entry_points={
         'console_scripts': ['UniqueIDServer=uniqueid:main']
     },
     scripts=['UniqueIDServer.py', 'DatabaseCreate.py'],

@@ -1,7 +1,7 @@
 cherrypy
 codeclimate-test-reporter
 coverage>=4.0,<4.4
-peewee
+peewee<3.0
 pep257
 pre-commit
 pylint<1.8
