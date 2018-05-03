@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+# pylint: disable=invalid-name
 """Create the unique index database schema."""
 from uniqueid.orm import create_tables
 
