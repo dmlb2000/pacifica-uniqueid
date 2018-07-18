@@ -4,7 +4,7 @@ coverage>=4.0,<4.4
 peewee>2
 pep257
 pre-commit
-pylint
+pylint<2.0
 pymysql
 pytest
 radon
