@@ -2,8 +2,20 @@
 # -*- coding: utf-8 -*-
 """UniqueID CherryPy Module."""
 from __future__ import print_function
+from json import dumps
 import cherrypy
 from .orm import UniqueIndex, update_index
+
+
+def error_page_default(**kwargs):
+    """The default error page should always enforce json."""
+    cherrypy.response.headers['Content-Type'] = 'application/json'
+    return dumps({
+        'status': kwargs['status'],
+        'message': kwargs['message'],
+        'traceback': kwargs['traceback'],
+        'version': kwargs['version']
+    })
 
 
 # pylint: disable=too-few-public-methods

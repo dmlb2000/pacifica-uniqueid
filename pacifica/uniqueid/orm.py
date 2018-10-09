@@ -1,19 +1,15 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 """ORM for index server."""
-import os
 import logging
 from time import sleep
 import peewee
+from playhouse.db_url import connect
+from pacifica.uniqueid.config import get_config
 
-DB = peewee.MySQLDatabase(os.getenv('MYSQL_ENV_MYSQL_DATABASE', 'pacifica_uniqueid'),
-                          host=os.getenv(
-                              'MYSQL_PORT_3306_TCP_ADDR', '127.0.0.1'),
-                          port=int(os.getenv('MYSQL_PORT_3306_TCP_PORT', 3306)),
-                          user=os.getenv('MYSQL_ENV_MYSQL_USER', 'uniqueid'),
-                          passwd=os.getenv('MYSQL_ENV_MYSQL_PASSWORD', 'uniqueid'))
-DATABASE_CONNECT_ATTEMPTS = 15
-DATABASE_WAIT = 3
+DATABASE_CONNECT_ATTEMPTS = 20
+DATABASE_WAIT = 5
+DB = connect(get_config().get('database', 'peewee_url'))
 
 
 class UniqueIndex(peewee.Model):
@@ -97,7 +93,7 @@ def try_db_connect(attempts=0):
             raise ex
 
 
-def create_tables():
+def database_setup():
     """Create the tables nessisary."""
     try_db_connect()
     if not UniqueIndex.table_exists():

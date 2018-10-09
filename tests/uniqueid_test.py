@@ -4,7 +4,7 @@
 from __future__ import print_function
 import unittest
 from peewee import SqliteDatabase
-from uniqueid.orm import UniqueIndex, update_index
+from pacifica.uniqueid.orm import UniqueIndex, update_index
 
 
 class IndexServerUnitTests(unittest.TestCase):
