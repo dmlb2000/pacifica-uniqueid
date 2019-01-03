@@ -6,7 +6,7 @@ import requests
 import cherrypy
 from cherrypy.test import helper
 from pacifica.uniqueid.rest import Root, error_page_default
-from pacifica.uniqueid.orm import database_setup, UniqueIndex
+from pacifica.uniqueid.orm import OrmSync, UniqueIndex
 from pacifica.uniqueid.globals import CHERRYPY_CONFIG
 
 
@@ -14,7 +14,7 @@ def uniqueid_droptables(func):
     """Setup the database and drop it once done."""
     def wrapper(*args, **kwargs):
         """Create the database table."""
-        database_setup()
+        OrmSync.update_tables()
         func(*args, **kwargs)
         UniqueIndex.drop_table()
     return wrapper

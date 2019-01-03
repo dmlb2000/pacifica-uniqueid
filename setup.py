@@ -27,7 +27,8 @@ setup(
     namespace_packages=['pacifica'],
     entry_points={
         'console_scripts': [
-            'pacifica-uniqueid=pacifica.uniqueid.__main__:main'
+            'pacifica-uniqueid=pacifica.uniqueid.__main__:main',
+            'pacifica-uniqueid-cmd=pacifica.uniqueid.__main__:cmd'
         ]
     },
     install_requires=[str(ir.req) for ir in INSTALL_REQS]

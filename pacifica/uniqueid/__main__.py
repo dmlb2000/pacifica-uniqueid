@@ -1,13 +1,28 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""UniqueID Module."""
+"""
+UniqueID command line module.
+
+This module contains two main programs for command line consumption.
+
+The `main()` method starts the server using CherryPy and serves the
+unique index API via REST.
+
+The ```cmd()``` method executes database administration subcommands. The
+```dbsync``` subcommand updates the database to the current version. The
+```dbchk``` subcommand checks the current version of the database against
+the database schema in the code and determines if it's safe to
+execute API.
+"""
+import os
 from time import sleep
 from threading import Thread
 from argparse import ArgumentParser, SUPPRESS
 import cherrypy
-from .globals import CHERRYPY_CONFIG
+from peewee import OperationalError
+from .globals import CHERRYPY_CONFIG, CONFIG_FILE
 from .rest import Root, error_page_default
-from .orm import database_setup
+from .orm import OrmSync, UniqueIndexSystem, SCHEMA_MAJOR, SCHEMA_MINOR
 
 
 def stop_later(doit=False):
@@ -28,6 +43,32 @@ def stop_later(doit=False):
     sleep_thread.start()
 
 
+def cmd():
+    """Admin command line tool."""
+    parser = ArgumentParser(description='UniqueIndex admin tool.')
+    parser.add_argument(
+        '-c', '--config', metavar='CONFIG', type=str, default=CONFIG_FILE,
+        dest='config', help='uniqueid config file'
+    )
+    subparsers = parser.add_subparsers(help='sub-command help')
+    db_parser = subparsers.add_parser(
+        'dbsync',
+        description='Update or Create the Database.'
+    )
+    db_parser.set_defaults(func=dbsync)
+    dbchk_parser = subparsers.add_parser(
+        'dbchk',
+        description='Check database against current version.'
+    )
+    dbchk_parser.add_argument(
+        '--equal', default=False,
+        dest='check_equal', action='store_true'
+    )
+    dbchk_parser.set_defaults(func=dbchk)
+    args = parser.parse_args()
+    return args.func(args)
+
+
 def main():
     """Main method to start the httpd server."""
     parser = ArgumentParser(description='Run the uniqueid server.')
@@ -44,7 +85,12 @@ def main():
                         default=False, dest='stop_later',
                         action='store_true')
     args = parser.parse_args()
-    database_setup()
+    OrmSync.dbconn_blocking()
+    if not UniqueIndexSystem.is_safe():
+        raise OperationalError('Database version too old {} update to {}'.format(
+            '{}.{}'.format(*(UniqueIndexSystem.get_version())),
+            '{}.{}'.format(SCHEMA_MAJOR, SCHEMA_MINOR)
+        ))
     stop_later(args.stop_later)
     cherrypy.config.update({'error_page.default': error_page_default})
     cherrypy.config.update({
@@ -52,6 +98,29 @@ def main():
         'server.socket_port': args.port
     })
     cherrypy.quickstart(Root(), '/', args.config)
+
+
+def bool2cmdint(command_bool):
+    """Convert a boolean to either 0 for true  or -1 for false."""
+    if command_bool:
+        return 0
+    return -1
+
+
+def dbsync(args):
+    """Create/Update the database schema to current code."""
+    os.environ['UNIQUEID_CONFIG'] = args.config
+    OrmSync.dbconn_blocking()
+    return OrmSync.update_tables()
+
+
+def dbchk(args):
+    """Check to see if the database is safe to use."""
+    os.environ['UNIQUEID_CONFIG'] = args.config
+    OrmSync.dbconn_blocking()
+    if args.check_equal:
+        return bool2cmdint(UniqueIndexSystem.is_equal())
+    return bool2cmdint(UniqueIndexSystem.is_safe())
 
 
 if __name__ == '__main__':
