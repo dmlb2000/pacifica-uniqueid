@@ -11,11 +11,12 @@ if [[ -z $PEEWEE_DATABASE_URL ]] ; then
   PEEWEE_DATABASE_URL="${PEEWEE_PROTO}://${PEEWEE_USER_PART}${PEEWEE_ADDR_PART}/${PEEWEE_DATABASE}"
 fi
 mkdir ~/.pacifica-uniqueid/
+cp /usr/src/app/server.conf ~/.pacifica-uniqueid/cpconfig.ini
 printf '[database]\npeewee_url = '${PEEWEE_DATABASE_URL}'\n' > ~/.pacifica-uniqueid/config.ini
-python -c 'from pacifica.uniqueid.__main__ import cmd; cmd()' dbsync
+pacifica-uniqueid-cmd dbsync
 uwsgi \
   --http-socket 0.0.0.0:8051 \
   --master \
   --die-on-term \
   -p 1 \
-  --wsgi-file /usr/src/app/pacifica/uniqueid/wsgi.py "$@"
+  --module pacifica.uniqueid.wsgi "$@"

@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 """Test the database connection logic."""
+from os import environ
 import mock
 import peewee
 from pacifica.uniqueid.orm import OrmSync, UniqueIndex, UniqueIndexSystem
@@ -11,11 +12,15 @@ def test_bad_db_connection(mock_db_connect):
     """Test a failed db connection."""
     mock_db_connect.side_effect = peewee.OperationalError(
         mock.Mock(), 'Error')
+    environ['DATABASE_CONNECT_ATTEMPTS'] = '2'
+    environ['DATABASE_CONNECT_WAIT'] = '2'
     hit_exception = False
     try:
         OrmSync.dbconn_blocking()
     except peewee.OperationalError:
         hit_exception = True
+    del environ['DATABASE_CONNECT_ATTEMPTS']
+    del environ['DATABASE_CONNECT_WAIT']
     assert hit_exception
 
 

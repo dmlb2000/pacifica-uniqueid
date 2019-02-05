@@ -1,3 +1,2 @@
 cherrypy
 peewee>2
-pymysql

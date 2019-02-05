@@ -3,6 +3,7 @@ cache: pip
 stages:
 - lint
 - test
+- test-docker
 - deploy
 ".script": &1
 - pip install .
@@ -43,6 +44,22 @@ jobs:
     python: 3.6
   - script: *1
     python: 2.7
+  - stage: test-docker
+    sudo: required
+    python: 3.6
+    services:
+    - docker
+    script: >
+      docker-compose build --pull;
+      docker-compose up -d;
+      MAX_TRIES=60;
+      HTTP_CODE=$(curl -sL -w "%{http_code}\\n" 'localhost:8051/getid' -o /dev/null || true);
+      while [[ $HTTP_CODE != 404 && $MAX_TRIES > 0 ]] ; do
+        sleep 1;
+        HTTP_CODE=$(curl -sL -w "%{http_code}\\n" 'localhost:8051/getid' -o /dev/null || true)
+        MAX_TRIES=$(( MAX_TRIES - 1 ))
+      done;
+      curl 'http://127.0.0.1:8051/getid?range=1&mode=test'
   - stage: deploy
     language: python
     before_install: skip
