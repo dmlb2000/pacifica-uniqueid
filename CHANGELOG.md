@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.5] - 2019-05-28
+### Changed
+- Fix #39 Added a Nice Status URL
+
 ## [0.3.4] - 2019-05-18
 ### Added
 - Manage ORM upgrades
