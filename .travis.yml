@@ -91,3 +91,4 @@ jobs:
         tags: true
 install:
 - pip install -r requirements-dev.txt
+- pip freeze
