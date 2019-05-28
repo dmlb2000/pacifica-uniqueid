@@ -38,6 +38,13 @@ class TestUniqueID(helper.CPWebCase):
         """Return the parsed url."""
         return self.url.format(range=id_range, mode=mode)
 
+    def test_status_url(self):
+        """Test the root level status page."""
+        resp = requests.get('http://127.0.0.1:8051')
+        self.assertEqual(resp.status_code, 200, 'Status code should be 200 OK')
+        self.assertTrue('message' in resp.json(), 'Status should be object with message key.')
+        self.assertEqual(resp.json()['message'], 'Pacifica UniqueID Up and Running', 'message should be specific.')
+
     @uniqueid_droptables
     def test_working_stuff(self):
         """Test the good working bits."""

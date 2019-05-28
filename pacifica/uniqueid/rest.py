@@ -41,6 +41,14 @@ class GetID(object):
 class Root(object):
     """CherryPy Root object."""
 
-    exposed = False
+    exposed = True
     getid = GetID()
+
+    @staticmethod
+    @cherrypy.tools.json_out()
+    # pylint: disable=invalid-name
+    def GET():
+        """Return happy message about functioning service."""
+        return {'message': 'Pacifica UniqueID Up and Running'}
+    # pylint: enable=invalid-name
 # pylint: enable=too-few-public-methods
