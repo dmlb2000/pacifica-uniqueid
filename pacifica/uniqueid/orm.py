@@ -76,7 +76,7 @@ class OrmSync(object):
         db_ver = UniqueIndexSystem.get_version()
         if verlist.index(verlist[-1]) == verlist.index(db_ver):
             # we have the current version don't update
-            return
+            return db_ver
         with UniqueIndex.atomic():
             for db_ver in verlist[verlist.index(db_ver):-1]:
                 next_db_ver = verlist[verlist.index(db_ver)+1]
@@ -87,7 +87,7 @@ class OrmSync(object):
                 getattr(cls, method_name)()
             UniqueIndexSystem.drop_table()
             UniqueIndexSystem.create_table()
-            UniqueIndexSystem.get_or_create_version()
+            return UniqueIndexSystem.get_or_create_version()
 
 
 class UniqueIndexBase(Model):
@@ -113,8 +113,8 @@ class UniqueIndexSystem(UniqueIndexBase):
         """Set or create the current version of the schema."""
         if not cls.table_exists():
             return (0, 0)
-        major = cls.get_or_create(part='major', value=SCHEMA_MAJOR)
-        minor = cls.get_or_create(part='minor', value=SCHEMA_MINOR)
+        major, _created = cls.get_or_create(part='major', value=SCHEMA_MAJOR)
+        minor, _created = cls.get_or_create(part='minor', value=SCHEMA_MINOR)
         return (major, minor)
 
     @classmethod

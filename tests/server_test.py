@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 """Unique ID unit and integration tests."""
 from __future__ import print_function
+import os
 import requests
 import cherrypy
 from cherrypy.test import helper
 from pacifica.uniqueid.rest import Root, error_page_default
 from pacifica.uniqueid.orm import OrmSync, UniqueIndex
-from pacifica.uniqueid.globals import CHERRYPY_CONFIG
 
 
 def uniqueid_droptables(func):
@@ -30,9 +30,11 @@ class TestUniqueID(helper.CPWebCase):
     @staticmethod
     def setup_server():
         """Bind tables to in memory db and start service."""
+        os.environ['UNIQUEID_CPCONFIG'] = os.path.join(os.path.dirname(
+            os.path.realpath(__file__)), '..', 'server.conf')
         cherrypy.config.update({'error_page.default': error_page_default})
-        cherrypy.config.update(CHERRYPY_CONFIG)
-        cherrypy.tree.mount(Root(), '/', CHERRYPY_CONFIG)
+        cherrypy.config.update(os.environ['UNIQUEID_CPCONFIG'])
+        cherrypy.tree.mount(Root(), '/', os.environ['UNIQUEID_CPCONFIG'])
 
     def _url(self, id_range, mode):
         """Return the parsed url."""

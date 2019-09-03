@@ -33,24 +33,6 @@ build: off
 test_script:
   - ps: >
       C:\pacifica\Scripts\activate.ps1;
-      $env:UNIQUEID_CPCONFIG = "$PWD/server.conf";
       pre-commit run -a;
-      cd tests;
-      pip install pacifica-uniqueid==0.2.1;
-      python -c 'from pacifica.uniqueid.orm import database_setup; database_setup()';
-      pip install ..;
-      echo "This command should fail";
-      coverage run --include='*/site-packages/pacifica/uniqueid/*' -m pacifica.uniqueid;
-      if ($LastExitCode -eq 0) { $host.SetShouldExit(-1); };
-      coverage run --include='*/site-packages/pacifica/uniqueid/*' -a cmd_test.py dbchk --equal;
-      if ($LastExitCode -eq 0) { $host.SetShouldExit(-1); };
-      coverage run --include='*/site-packages/pacifica/uniqueid/*' -a cmd_test.py dbchk;
-      if ($LastExitCode -eq 0) { $host.SetShouldExit(-1); };
-      coverage run --include='*/site-packages/pacifica/uniqueid/*' -a cmd_test.py dbsync;
-      rm -Force db.sqlite3;
-      coverage run --include='*/site-packages/pacifica/uniqueid/*' -a cmd_test.py dbsync;
-      coverage run --include='*/site-packages/pacifica/uniqueid/*' -a cmd_test.py dbchk --equal;
-      coverage run --include='*/site-packages/pacifica/uniqueid/*' -a cmd_test.py dbchk;
-      coverage run --include='*/site-packages/pacifica/uniqueid/*' -am pacifica.uniqueid --stop-after-a-moment;
-      coverage run --include='*/site-packages/pacifica/uniqueid/*' -am pytest -xv;
-      coverage report -m --fail-under=100;
+      coverage run --include='pacifica/uniqueid/*' -m pytest -xsv tests;
+      coverage report --include='pacifica/uniqueid/*' --omit='pacifica/uniqueid/wsgi*' -m --fail-under=100;
