@@ -19,7 +19,7 @@ def error_page_default(**kwargs):
 
 
 # pylint: disable=too-few-public-methods
-class GetID(object):
+class GetID:
     """CherryPy GetID object."""
 
     exposed = True
@@ -38,7 +38,7 @@ class GetID(object):
     # pylint: enable=invalid-name
 
 
-class Root(object):
+class Root:
     """CherryPy Root object."""
 
     exposed = True

@@ -12,7 +12,7 @@ SCHEMA_MINOR = 0
 DB = connect(get_config().get('database', 'peewee_url'))
 
 
-class OrmSync(object):
+class OrmSync:
     """
     Special module for syncing the orm.
 
@@ -94,7 +94,7 @@ class UniqueIndexBase(Model):
     """UniqueIndex base model for database setup."""
 
     # pylint: disable=too-few-public-methods
-    class Meta(object):
+    class Meta:
         """Map to the database connected above."""
 
         database = DB
@@ -183,7 +183,6 @@ class UniqueIndex(UniqueIndexBase):
 def update_index(id_range, id_mode):
     """Update the index for a mode and returns a unique start and stop index."""
     index = -1
-    id_range = id_range
     with UniqueIndex.atomic():
         if id_range and id_mode and id_range > 0:
             record = UniqueIndex.get_or_create(

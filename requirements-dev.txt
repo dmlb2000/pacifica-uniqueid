@@ -1,11 +1,11 @@
 -r requirements.txt
 coverage
 mock
-pbs
+pbs; sys_platform == 'win32'
 pep257
 pre-commit
-pylint<2.0
+pylint>2
 pytest
 radon
 recommonmark
-sh
+sh; sys_platform != 'win32'

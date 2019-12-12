@@ -11,7 +11,7 @@ try:
 except ImportError:
     import pbs
 
-    class Sh(object):
+    class Sh:
         """Sh style wrapper."""
 
         def __getattr__(self, attr):
