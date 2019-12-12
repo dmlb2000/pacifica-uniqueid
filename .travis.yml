@@ -1,6 +1,7 @@
 language: python
 dist: bionic
 cache: pip
+python: 3.6
 stages:
 - lint
 - test
@@ -16,13 +17,17 @@ script:
 jobs:
   include:
   - stage: lint
-    python: 3.6
+    script: pre-commit run -a
+  - python: 3.7
+    script: pre-commit run -a
+  - python: 3.8
     script: pre-commit run -a
   - stage: test
-    python: 3.6
+  - python: 3.7
+  - python: 3.8
   - stage: test-docker
     sudo: required
-    python: 3.6
+    python: 3.8
     services:
     - docker
     script: >
@@ -40,7 +45,7 @@ jobs:
     language: python
     before_install: skip
     script: skip
-    python: 3.6
+    python: 3.8
     deploy:
       skip_cleanup: true
       provider: pypi
