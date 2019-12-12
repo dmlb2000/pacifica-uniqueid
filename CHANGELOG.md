@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [0.5.0] - 2019-12-12
+### Changed
+- Pull #48 Add Python 3.7 and 3.8 testing by [@dmlb2000](https://github.com/dmlb2000)
+- Pull #47 Update Pylint 2.0+ by [@dmlb2000](https://github.com/dmlb2000)
+- Pull #46 Use Bionic in Travis CI by [@dmlb2000](https://github.com/dmlb2000)
+- Pull #45 Remove Python 2.7 support by [@dmlb2000](https://github.com/dmlb2000)
+
 ## [0.4.0] - 2019-09-02
 ### Changed
 - Refactor Testing by [@dmlb2000](https://github.com/dmlb2000)
