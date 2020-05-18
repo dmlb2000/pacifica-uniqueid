@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.1] - 2020-05-18
+### Changed
+- Pull #50 Remove Requirements Pip>=20 by [@dmlb2000](https://github.com/dmlb2000)
 
 ## [0.5.0] - 2019-12-12
 ### Changed
