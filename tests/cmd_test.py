@@ -88,7 +88,7 @@ class TestAdminCmdSync(TestAdminCmdBase):
         cmd('dbsync')
         hit_exception = False
         try:
-            main('--stop-after-a-moment', '--cpconfig', 'server.conf')
+            main('--stop-after-a-moment', '--cpconfig', os.path.join(os.path.dirname(__file__), '..', 'server.conf'))
         # pylint: disable=broad-except
         except Exception:
             hit_exception = True

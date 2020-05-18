@@ -1,3 +1,0 @@
-cherrypy
-pacifica-namespace
-peewee>2
